@@ -4,7 +4,7 @@ $if(colorlinks)$
 \PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
 $endif$
 %
-\documentclass[twocolumn]{article}
+\documentclass[]{article}
 $if(beamer)$
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
@@ -375,9 +375,9 @@ $if(logo)$
 $endif$
 $endif$
 
-\title{\vspace{50mm} \huge Nea1's Code Library \\[20pt]}
-\author{Nea1 \\[10pt] ORZ}
-\date{He is Nea1}
+\title{\vspace{50mm} \huge Fortcoders Code Library \\[20pt]}
+\author{Nea1 \\[10pt]}
+\date{April 29th 2022}
 
 
 \begin{document}
