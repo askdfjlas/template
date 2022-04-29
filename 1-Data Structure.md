@@ -670,3 +670,160 @@ vector<vector<int>> test =  {
 SparseTable2d<int> st(test);                // Range min query
 SparseTable2d<int,greater<int>> st2(test);  // Range max query
 ```
+
+## K-D Tree
+
+```cpp
+struct Point {
+  int x, y;
+};
+struct Rectangle {
+  int lx, rx, ly, ry;
+};
+
+bool is_in(const Point &p, const Rectangle &rg) {
+  return (p.x >= rg.lx) && (p.x <= rg.rx) && (p.y >= rg.ly) && (p.y <= rg.ry);
+}
+
+struct KDTree {
+  vector<Point> points;
+  struct Node {
+    int lc, rc;
+    Point point;
+    Rectangle range;
+    int num;
+  };
+  vector<Node> nodes;
+  int root = -1;
+  KDTree(const vector<Point> &points_) {
+    points = points_;
+    Rectangle range = {-1e9, 1e9, -1e9, 1e9};
+    root = tree_construct(0, (int)points.size(), range, 0);
+  }
+  int tree_construct(int l, int r, Rectangle range, int depth) {
+    if (l == r) return -1;
+    if (l > r) throw;
+    int mid = (l + r) / 2;
+    auto comp = (depth % 2) ? [](Point &a, Point &b) { return a.x < b.x; }
+                            : [](Point &a, Point &b) { return a.y < b.y; };
+    nth_element(points.begin() + l, points.begin() + mid, points.begin() + r, comp);
+    Rectangle l_range(range), r_range(range);
+    if (depth % 2) {
+      l_range.rx = points[mid].x;
+      r_range.lx = points[mid].x;
+    } else {
+      l_range.ry = points[mid].y;
+      r_range.ly = points[mid].y;
+    }
+    Node node = {tree_construct(l, mid, l_range, depth + 1),
+                 tree_construct(mid + 1, r, r_range, depth + 1), points[mid], range, r - l};
+    nodes.push_back(node);
+    return (int)nodes.size() - 1;
+  }
+
+  int inner_query(int id, const Rectangle &rec, int depth) {
+    if (id == -1) return 0;
+    Rectangle rg = nodes[id].range;
+    if (rg.lx >= rec.lx && rg.rx <= rec.rx && rg.ly >= rec.ly && rg.ry <= rec.ry) {
+      return nodes[id].num;
+    }
+    int ans = 0;
+    if (depth % 2) { // pruning
+      if (rec.lx <= nodes[id].point.x) ans += inner_query(nodes[id].lc, rec, depth + 1);
+      if (rec.rx >= nodes[id].point.x) ans += inner_query(nodes[id].rc, rec, depth + 1);
+    } else {
+      if (rec.ly <= nodes[id].point.y) ans += inner_query(nodes[id].lc, rec, depth + 1);
+      if (rec.ry >= nodes[id].point.y) ans += inner_query(nodes[id].rc, rec, depth + 1);
+    }
+    if (is_in(nodes[id].point, rec)) ans += 1;
+    return ans;
+  }
+  int query(const Rectangle &rec) { return inner_query(root, rec, 0); }
+};
+```
+
+## Link/Cut Tree
+
+```cpp
+struct Node {
+  Node *ch[2], *p;
+  int id;
+  bool rev;
+  Node(int id) : ch{nullptr, nullptr}, p(nullptr), id(id), rev(false) {}
+  friend void reverse(Node *p) {
+    if (p != nullptr) {
+      swap(p->ch[0], p->ch[1]);
+      p->rev ^= 1;
+    }
+  }
+  void push() {
+    if (rev) {
+      reverse(ch[0]);
+      reverse(ch[1]);
+      rev = false;
+    }
+  }
+  void pull() {}
+  bool is_root() { return p == nullptr || p->ch[0] != this && p->ch[1] != this; }
+  bool pos() { return p->ch[1] == this; }
+  void rotate() {
+    Node *q = p;
+    bool x = !pos();
+    q->ch[!x] = ch[x];
+    if (ch[x] != nullptr) ch[x]->p = q;
+    p = q->p;
+    if (!q->is_root()) q->p->ch[q->pos()] = this;
+    ch[x] = q;
+    q->p = this;
+    pull();
+    q->pull();
+  }
+  void splay() {
+    vector<Node *> s;
+    for (Node *i = this; !i->is_root(); i = i->p) s.push_back(i->p);
+    while (!s.empty()) s.back()->push(), s.pop_back();
+    push();
+    while (!is_root()) {
+      if (!p->is_root()) {
+        if (pos() == p->pos()) {
+          p->rotate();
+        } else {
+          rotate();
+        }
+      }
+      rotate();
+    }
+    pull();
+  }
+  void access() {
+    for (Node *i = this, *q = nullptr; i != nullptr; q = i, i = i->p) {
+      i->splay();
+      i->ch[1] = q;
+      i->pull();
+    }
+    splay();
+  }
+  void makeroot() {
+    access();
+    reverse(this);
+  }
+};
+void link(Node *x, Node *y) {
+  x->makeroot();
+  x->p = y;
+}
+void split(Node *x, Node *y) {
+  x->makeroot();
+  y->access();
+}
+void cut(Node *x, Node *y) {
+  split(x, y);
+  x->p = y->ch[0] = nullptr;
+  y->pull();
+}
+bool connected(Node *p, Node *q) {
+    p->access();
+    q->access();
+    return p->p != nullptr;
+}
+```

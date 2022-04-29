@@ -4,7 +4,7 @@ $if(colorlinks)$
 \PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
 $endif$
 %
-\documentclass[$if(fontsize)$$fontsize$,$endif$$if(lang)$$babel-lang$,$endif$$if(papersize)$$papersize$paper,$endif$$if(beamer)$ignorenonframetext,$if(handout)$handout,$endif$$if(aspectratio)$aspectratio=$aspectratio$,$endif$$endif$$for(classoption)$$classoption$$sep$,$endfor$]{$documentclass$}
+\documentclass[twocolumn]{article}
 $if(beamer)$
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
@@ -167,7 +167,7 @@ $if(listings)$
 \lstset{
     basicstyle=\footnotesize\ttfamily,
     columns=flexible,
-    breaklines=true, 
+    breaklines=true,
     breakatwhitespace=false,
     numbers=left,
     numberstyle=\scriptsize,
@@ -178,7 +178,7 @@ $if(listings)$
 \definecolor{mygreen}{rgb}{0,0.6,0}
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
-\lstset{ 
+\lstset{
   backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
 %   basicstyle=\footnotesize,        % the size of the fonts that are used for the code
 %   breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
