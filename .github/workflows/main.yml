@@ -49,9 +49,10 @@ jobs:
         sh pandoc/gen.sh
     - name: Deploy
       run: |
-        git clone -b gh-pages https://oauth2:${{secrets.ACCESS_TOKEN}}@github.com/askdfjlas/template /tmp/template
-        cp template.pdf /tmp/template/
-        cd /tmp/template
+        mkdir /tmp/template
+        mv template.pdf /tmp/template/
+        git checkout gh-page
+        cp /tmp/template/template.pdf .
         git add template.pdf
         git config --global user.email "bot@fortcoder.io"
         git config --global user.name "fortcoder BOT"
