@@ -5,6 +5,7 @@ $if(colorlinks)$
 $endif$
 %
 \documentclass[twocolumn]{article}
+\setlength{\voffset}{-0.3cm}
 \setlength{\columnsep}{1cm}
 $if(beamer)$
 \setbeamertemplate{caption}[numbered]
