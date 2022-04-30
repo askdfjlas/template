@@ -47,11 +47,13 @@ jobs:
         mkdir -p ~/.pandoc/templates
         cp pandoc/algo.latex ~/.pandoc/templates/
         sh pandoc/gen.sh
-    - name: Deploy
-      run: |
         mkdir /tmp/template
         mv template.pdf /tmp/template/
-        git checkout gh-pages
+    - uses: actions/checkout@v3
+      with:
+        ref: gh-pages
+    - name: Deploy
+      run: |
         cp /tmp/template/template.pdf .
         git add template.pdf
         git config --global user.email "bot@fortcoder.io"
