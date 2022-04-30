@@ -5,6 +5,7 @@ $if(colorlinks)$
 $endif$
 %
 \documentclass[twocolumn]{article}
+\setlength{\columnsep}{1cm}
 $if(beamer)$
 \setbeamertemplate{caption}[numbered]
 \setbeamertemplate{caption label separator}{: }
