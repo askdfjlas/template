@@ -25,7 +25,7 @@ struct SegTree {
     } else {
       int m = (l + r) / 2;
       if (x < m) {
-        t[u].lc = modify(t[p].lc, l, m, x, v); // ub before c++17
+        t[u].lc = modify(t[p].lc, l, m, x, v);
       } else {
         t[u].rc = modify(t[p].rc, m, r, x, v);
       }
