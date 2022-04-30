@@ -51,7 +51,7 @@ jobs:
       run: |
         mkdir /tmp/template
         mv template.pdf /tmp/template/
-        git checkout gh-page
+        git checkout gh-pages
         cp /tmp/template/template.pdf .
         git add template.pdf
         git config --global user.email "bot@fortcoder.io"
