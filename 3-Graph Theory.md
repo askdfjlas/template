@@ -204,8 +204,8 @@ struct MinCostFlow {
 ## Heavy-Light Decomposition
 
 ```cpp
-int root = 0;
-vector<int> parent(n), deep(n), hson(n, -1), top(n), sz(n);
+int root = 0, cur = 0;
+vector<int> parent(n), deep(n), hson(n, -1), top(n), sz(n), dfn(n, -1);
 function<int(int, int, int)> dfs = [&](int node, int fa, int dep) {
   deep[node] = dep, sz[node] = 1, parent[node] = fa;
   for (auto &ne : g[node]) {
@@ -216,7 +216,7 @@ function<int(int, int, int)> dfs = [&](int node, int fa, int dep) {
   return sz[node];
 };
 function<void(int, int)> dfs2 = [&](int node, int t) {
-  top[node] = t;
+  top[node] = t, dfn[node] = cur++;
   if (hson[node] == -1) return;
   dfs2(hson[node], t);
   for (auto &ne : g[node]) {
@@ -224,6 +224,7 @@ function<void(int, int)> dfs2 = [&](int node, int t) {
     dfs2(ne, ne);
   }
 };
+// read in graph as vector<vector<int>> g(n)
 dfs(root, -1, 0), dfs2(root, root);
 ```
 
