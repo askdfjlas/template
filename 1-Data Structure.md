@@ -338,12 +338,12 @@ template <typename T> struct FenwickTree {
 
 ```cpp
 struct Fenwick2D {
-  ll n;
+  ll n, m;
   vector<vector<ll>> a;
-  Fenwick2D(ll n) : n(n), a(n, vector<ll>(n)) {}
+  Fenwick2D(ll _n, ll _m) : n(_n), m(_m), a(n, vector<ll>(m)) {}
   void add(ll x, ll y, ll v) {
     for (int i = x + 1; i <= n; i += i & -i) {
-      for (int j = y + 1; j <= n; j += j & -j) {
+      for (int j = y + 1; j <= m; j += j & -j) {
         (a[i - 1][j - 1] += v) %= MOD;
       }
     }
@@ -354,7 +354,7 @@ struct Fenwick2D {
     add(x1, y2, MOD - v), add(x2, y1, MOD - v);
     add(x2, y2, v);
   }
-  ll sum(ll x, ll y) { // [(0, 0), (x, y))
+  ll sum(ll x, ll y) {  // [(0, 0), (x, y))
     ll ans = 0;
     for (int i = x; i > 0; i -= i & -i) {
       for (int j = y; j > 0; j -= j & -j) {
