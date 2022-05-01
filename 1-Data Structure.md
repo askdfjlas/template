@@ -304,8 +304,6 @@ struct DSU {
 
 ## Fenwick Tree
 
-+ askd version
-
 ```cpp
 template <typename T> struct FenwickTree {
   int size = 1, high_bit = 1;
@@ -336,27 +334,35 @@ template <typename T> struct FenwickTree {
 };
 ```
 
-+ Nea1 version
+## Fenwick2D Tree
 
 ```cpp
-template <typename T>
-struct Fenwick {
-  const int n;
-  vector<T> a;
-  Fenwick(int n) : n(n), a(n) {}
-  void add(int x, T v) {
+struct Fenwick2D {
+  ll n;
+  vector<vector<ll>> a;
+  Fenwick2D(ll n) : n(n), a(n, vector<ll>(n)) {}
+  void add(ll x, ll y, ll v) {
     for (int i = x + 1; i <= n; i += i & -i) {
-      a[i - 1] += v;
+      for (int j = y + 1; j <= n; j += j & -j) {
+        (a[i - 1][j - 1] += v) %= MOD;
+      }
     }
   }
-  T sum(int x) {
-    T ans = 0;
+  void add(ll x1, ll x2, ll y1, ll y2, ll v) {
+    // [(x1, y1), (x2, y2))
+    add(x1, y1, v);
+    add(x1, y2, MOD - v), add(x2, y1, MOD - v);
+    add(x2, y2, v);
+  }
+  ll sum(ll x, ll y) { // [(0, 0), (x, y))
+    ll ans = 0;
     for (int i = x; i > 0; i -= i & -i) {
-      ans += a[i - 1];
+      for (int j = y; j > 0; j -= j & -j) {
+        (ans += a[i - 1][j - 1]) %= MOD;
+      }
     }
     return ans;
   }
-  T rangeSum(int l, int r) { return sum(r) - sum(l); }
 };
 ```
 
