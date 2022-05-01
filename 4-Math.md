@@ -122,6 +122,37 @@ struct Z {
 };
 ```
 
+# Cancer mod class
+
++ Explanation: for some prime modulo p, maintains numbers of form p^x * y, where y is a nonzero remainder mod p
++ Be careful with calling Cancer(x, y), it doesn't fix the input if y > p
+
+```cpp
+struct Cancer {
+  ll x; ll y;
+  Cancer() : Cancer(0, 1) {}
+  Cancer(ll _y) {
+    x = 0, y = _y;
+    while(y % MOD == 0) {
+      y /= MOD;
+      x++;
+    }
+  }
+  Cancer(ll _x, ll _y) : x(_x), y(_y) {}
+  Cancer inv() { return Cancer(-x, power(y, MOD - 2)); }
+  Cancer operator*(const Cancer &c) { return Cancer(x + c.x, (y * c.y) % MOD); }
+  Cancer operator*(ll m) {
+    ll p = 0;
+    while(m % MOD == 0) {
+      m /= MOD;
+      p++;
+    }
+    return Cancer(x + p, (m * y) % MOD);
+  }
+  friend auto &operator<<(ostream &o, Cancer c) { return o << c.x << ' ' << c.y; }
+};
+```
+
 ## NTT, FFT, FWT
 
 + ntt
