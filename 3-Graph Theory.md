@@ -152,7 +152,7 @@ struct PushRelabel {
 ```cpp
 class MCMF {
 public:
-  constexpr int INF = 1e9;
+  static constexpr int INF = 1e9;
   const int n;
   vector<tuple<int, int, int>> e;
   vector<vector<int>> g;
