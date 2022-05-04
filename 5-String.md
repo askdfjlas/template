@@ -6,10 +6,10 @@
 struct AC_automaton {
   int sz = 26;
   vector<vector<int>> e = {vector<int>(sz)};  // vector is faster than unordered_map
-  vector<int> fail = {0};
-  vector<int> end = {0};
+  vector<int> fail = {0}, end = {0};
+  vector<int> fast = {0};  // closest end
 
-  void insert(string& s) {
+  int insert(string& s) {
     int p = 0;
     for (auto c : s) {
       c -= 'a';
@@ -17,11 +17,13 @@ struct AC_automaton {
         e.emplace_back(sz);
         fail.emplace_back();
         end.emplace_back();
+        fast.emplace_back();
         e[p][c] = (int)e.size() - 1;
       }
       p = e[p][c];
     }
     end[p] += 1;
+    return p;
   }
 
   void build() {
@@ -31,6 +33,7 @@ struct AC_automaton {
     while (!q.empty()) {
       int p = q.front();
       q.pop();
+      fast[p] = end[p] ? p : fast[fail[p]];
       for (int i = 0; i < sz; i++) {
         if (e[p][i]) {
           fail[e[p][i]] = e[fail[p]][i];
