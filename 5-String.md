@@ -17,7 +17,7 @@ struct AC_automaton {
         e.emplace_back(sz);
         fail.emplace_back();
         end.emplace_back();
-        e[p][c] = e.size() - 1;
+        e[p][c] = (int)e.size() - 1;
       }
       p = e[p][c];
     }
