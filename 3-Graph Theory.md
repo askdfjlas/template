@@ -293,6 +293,34 @@ function<int(int, int)> lca = [&](int x, int y) {
 };
 ```
 
+```cpp
+vector<ll> light(n);
+SegTree heavy(n), form_parent(n);
+// cin >> x >> y, x--, y--;
+int z = lca(x, y);
+while (x != z) {
+  if (dfn[top[x]] <= dfn[top[z]]) {
+    // [dfn[z], dfn[x]), from heavy
+    heavy.modify(dfn[z], dfn[x], 1);
+    break;
+  }
+  // x -> top[x];
+  heavy.modify(dfn[top[x]], dfn[x], 1);
+  light[parent[top[x]]] += a[top[x]];
+  x = parent[top[x]];
+}
+while (y != z) {
+  if (dfn[top[y]] <= dfn[top[z]]) {
+    // (dfn[z], dfn[y]], from heavy
+    form_parent.modify(dfn[z] + 1, dfn[y] + 1, 1);
+    break;
+  }
+  // y -> top[y];
+  form_parent.modify(dfn[top[y]], dfn[y] + 1, 1);
+  y = parent[top[y]];
+}
+```
+
 ## General Unweight Graph Matching
 
 + Complexity: $O(n^3)$ (?)
