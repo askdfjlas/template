@@ -17,7 +17,7 @@ rf[MAX_N - 1] = power(f[MAX_N - 1], MOD - 2);
 for (int i = MAX_N - 2; i > 1; i--) rf[i] = rf[i + 1] * (i + 1) % MOD;
 auto binom = [&](ll n, ll r) -> Z {
   if (n < 0 || r < 0 || n < r) return 0;
-    return f[n] * rf[n - r] * rf[r];
+  return f[n] * rf[n - r] * rf[r];
 };
 ```
 
