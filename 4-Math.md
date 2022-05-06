@@ -11,14 +11,14 @@ power(a, MOD - 2)
 + USAGE: get factorial
 
 ```cpp
-vector<ll> f(MAX_N, 1), rf(MAX_N, 1);
-for (int i = 1; i < MAX_N; i++) f[i] = (f[i - 1] * i) % MOD;
-for (int i = 1; i < MAX_N; i++) rf[i] = (rf[i - 1] * inv(i, MOD)) % MOD;
-// or (the later one should be preferred
-vector<ll> f(MAX_N, 1), rf(MAX_N, 1);
+vector<Z> f(MAX_N, 1), rf(MAX_N, 1);
 for (int i = 2; i < MAX_N; i++) f[i] = f[i - 1] * i % MOD;
 rf[MAX_N - 1] = power(f[MAX_N - 1], MOD - 2);
 for (int i = MAX_N - 2; i > 1; i--) rf[i] = rf[i + 1] * (i + 1) % MOD;
+auto binom = [&](ll n, ll r) -> Z {
+if (n < 0 || r < 0 || n < r) return 0;
+  return f[n] * rf[n - r] * rf[r];
+};
 ```
 
 ## Mod Class
