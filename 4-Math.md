@@ -729,3 +729,20 @@ void radix_sort(vector<T> &data, int bits_per_pass = 10, const T_extract_key &ex
 ```cpp
 radix_sort(edges, 10, [&](const edge &e) -> int { return abs(e.weight - x); });
 ```
+
+## lucas
+```cpp
+ll lucas(ll n, ll m, ll p) {
+  if (m == 0) return 1;
+  return (binom(n % p, m % p, p) * lucas(n / p, m / p, p)) % p;
+}
+```
+
+## parity of n choose m
+```cpp
+auto get_parity = [&](ll _n, ll _m) -> int {
+  if (_n == 0 || _m == 0) return 1;
+  if ((_n - 1) < _m || _m < 0) return 0;
+  return (((_n - 1) - _m) & _m) == 0;
+};
+```
