@@ -740,9 +740,5 @@ ll lucas(ll n, ll m, ll p) {
 
 ## parity of n choose m
 ```cpp
-auto get_parity = [&](ll _n, ll _m) -> int {
-  if (_n == 0 || _m == 0) return 1;
-  if ((_n - 1) < _m || _m < 0) return 0;
-  return (((_n - 1) - _m) & _m) == 0;
-};
+(n & m) == m <=> odd
 ```
