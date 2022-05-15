@@ -742,3 +742,14 @@ ll lucas(ll n, ll m, ll p) {
 ```cpp
 (n & m) == m <=> odd
 ```
+
+## sosdp
+subset sum
+```cpp
+auto f = a;
+for (int i = 0; i < SZ; i++) {
+  for (int mask = 0; mask < (1 << SZ); mask++) {
+    if (mask & (1 << i)) f[mask] += f[mask ^ (1 << i)];
+  }
+}
+```
