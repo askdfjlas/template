@@ -280,7 +280,7 @@ void ntt(vector<Z> &a, int f) {
   for (int i = 0; i < n; i++) rev[i] = (rev[i / 2] / 2) | ((i & 1) * (n / 2));
   for (int i = 0; i < n; i++)
     if (i < rev[i]) swap(a[i], a[rev[i]]);
-  Z wn = power(f ? (MOD + 1) / 3 : 3, (MOD - 1) / n);
+  Z wn = power(ll(f ? (MOD + 1) / 3 : 3), (MOD - 1) / n);
   w[0] = 1;
   for (int i = 1; i < n; i++) w[i] = w[i - 1] * wn;
   for (int mid = 1; mid < n; mid *= 2) {
