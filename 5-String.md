@@ -216,10 +216,20 @@ void duval(const string &s) {
     }
   }
 }
+```
 
-int main() {
-  string s;
-  cin >> s;
-  duval(s);
+## minimal representation
+
+```cpp
+int k = 0, i = 0, j = 1;
+while (k < n && i < n && j < n) {
+  if (s[(i + k) % n] == s[(j + k) % n]) {
+    k++;
+  } else {
+    s[(i + k) % n] > s[(j + k) % n] ? i = i + k + 1 : j = j + k + 1;
+    if (i == j) i++;
+    k = 0;
+  }
 }
+i = min(i, j); // from 0
 ```
