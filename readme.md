@@ -2,4 +2,4 @@
 
 ![](https://github.com/askdfjlas/template/workflows/build/badge.svg)
 
-[PDF](https://askdfjlas.github.io/template/template.pdf)
+[PDF](https://github.com/askdfjlas/template/blob/gh-pages/template.pdf)
