@@ -55,71 +55,17 @@ struct Z {
 + large mod (for NTT to do FFT in ll range without modulo)
 
 ```cpp
-using ll = long long;
-using i128 = __int128;
 constexpr i128 MOD = 9223372036737335297;
-
-constexpr i128 norm(i128 x) { return x < 0 ? (x + MOD) % MOD : x % MOD; }
-template <typename T>
-constexpr T power(T a, i128 b, T res = 1) {
-  for (; b; b /= 2, (a *= a) %= MOD)
-    if (b & 1) (res *= a) %= MOD;
-  return res;
-}
-struct Z {
-  i128 x;
-  constexpr Z(i128 _x = 0) : x(norm(_x)) {}
-  Z operator-() const { return Z(norm(MOD - x)); }
-  Z inv() const { return power(*this, MOD - 2); }
-  // auto operator<=>(const Z&) const = default;
-  Z &operator*=(const Z &rhs) { return x = x * rhs.x % MOD, *this; }
-  Z &operator+=(const Z &rhs) { return x = norm(x + rhs.x), *this; }
-  Z &operator-=(const Z &rhs) { return x = norm(x - rhs.x), *this; }
-  Z &operator/=(const Z &rhs) { return *this *= rhs.inv(); }
-  Z &operator%=(const i128 &rhs) { return x %= rhs, *this; }
-  friend Z operator*(Z lhs, const Z &rhs) { return lhs *= rhs; }
-  friend Z operator+(Z lhs, const Z &rhs) { return lhs += rhs; }
-  friend Z operator-(Z lhs, const Z &rhs) { return lhs -= rhs; }
-  friend Z operator/(Z lhs, const Z &rhs) { return lhs /= rhs; }
-  friend Z operator%(Z lhs, const i128 &rhs) { return lhs %= rhs; }
-};
 ```
 
 + fastest mod class! be careful with overflow, only use when the time limit is tight
 
 ```cpp
-constexpr int MOD = 998244353;
-
 constexpr int norm(int x) {
   if (x < 0) x += MOD;
   if (x >= MOD) x -= MOD;
   return x;
 }
-template <typename T>
-constexpr T power(T a, int b, T res = 1) {
-  for (; b; b /= 2, (a *= a) %= MOD)
-    if (b & 1) (res *= a) %= MOD;
-  return res;
-}
-struct Z {
-  int x;
-  constexpr Z(int _x = 0) : x(norm(_x)) {}
-  // constexpr auto operator<=>(const Z &) const = default; // cpp20 only
-  constexpr Z operator-() const { return Z(norm(MOD - x)); }
-  constexpr Z inv() const { return power(*this, MOD - 2); }
-  constexpr Z &operator*=(const Z &rhs) { return x = ll(x) * rhs.x % MOD, *this; }
-  constexpr Z &operator+=(const Z &rhs) { return x = norm(x + rhs.x), *this; }
-  constexpr Z &operator-=(const Z &rhs) { return x = norm(x - rhs.x), *this; }
-  constexpr Z &operator/=(const Z &rhs) { return *this *= rhs.inv(); }
-  constexpr Z &operator%=(const ll &rhs) { return x %= rhs, *this; }
-  constexpr friend Z operator*(Z lhs, const Z &rhs) { return lhs *= rhs; }
-  constexpr friend Z operator+(Z lhs, const Z &rhs) { return lhs += rhs; }
-  constexpr friend Z operator-(Z lhs, const Z &rhs) { return lhs -= rhs; }
-  constexpr friend Z operator/(Z lhs, const Z &rhs) { return lhs /= rhs; }
-  constexpr friend Z operator%(Z lhs, const ll &rhs) { return lhs %= rhs; }
-  friend auto &operator>>(istream &i, Z &z) { return i >> z.x; }
-  friend auto &operator<<(ostream &o, const Z &z) { return o << z.x; }
-};
 ```
 
 # Cancer mod class
@@ -659,7 +605,6 @@ struct identity {
         return x;
     }
 };
-
 // A stable sort that sorts in passes of `bits_per_pass` bits at a time.
 template<typename T, typename T_extract_key = identity>
 void radix_sort(vector<T> &data, int bits_per_pass = 10, const T_extract_key &extract_key = identity()) {
@@ -672,26 +617,21 @@ void radix_sort(vector<T> &data, int bits_per_pass = 10, const T_extract_key &ex
 
     using T_key = decltype(extract_key(data.front()));
     T_key minimum = numeric_limits<T_key>::max();
-
     for (T &x : data)
         minimum = min(minimum, extract_key(x));
 
     int max_bits = 0;
-
     for (T &x : data) {
         T_key key = extract_key(x);
         max_bits = max(max_bits, key == minimum ? 0 : 64 - __builtin_clzll(key - minimum));
     }
-
     int passes = max((max_bits + bits_per_pass / 2) / bits_per_pass, 1);
-
     if (64 - __builtin_clzll(data.size()) <= 1.5 * passes) {
         stable_sort(data.begin(), data.end(), [&](const T &a, const T &b) {
             return extract_key(a) < extract_key(b);
         });
         return;
     }
-
     vector<T> buffer(data.size());
     vector<int> counts;
     int bits_so_far = 0;
@@ -699,26 +639,21 @@ void radix_sort(vector<T> &data, int bits_per_pass = 10, const T_extract_key &ex
     for (int p = 0; p < passes; p++) {
         int bits = (max_bits + p) / passes;
         counts.assign(1 << bits, 0);
-
         for (T &x : data) {
             T_key key = T_key(extract_key(x) - minimum);
             counts[(key >> bits_so_far) & ((1 << bits) - 1)]++;
         }
-
         int count_sum = 0;
-
         for (int &count : counts) {
             int current = count;
             count = count_sum;
             count_sum += current;
         }
-
         for (T &x : data) {
             T_key key = T_key(extract_key(x) - minimum);
             int key_section = int((key >> bits_so_far) & ((1 << bits) - 1));
             buffer[counts[key_section]++] = x;
         }
-
         swap(data, buffer);
         bits_so_far += bits;
     }
