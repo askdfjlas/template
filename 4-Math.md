@@ -68,7 +68,7 @@ constexpr int norm(int x) {
 }
 ```
 
-# Cancer mod class
+## Cancer mod class
 
 + Explanation: for some prime modulo p, maintains numbers of form p^x * y, where y is a nonzero remainder mod p
 + Be careful with calling Cancer(x, y), it doesn't fix the input if y > p
