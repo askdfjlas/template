@@ -838,3 +838,120 @@ bool connected(Node *p, Node *q) {
     return p->p != nullptr;
 }
 ```
+
+## Li-Chao Tree
+
+```cpp
+template <typename T, T LO, T HI, class C = less<T>> struct LiChaoTree {
+  struct Line {
+    T m, b;
+    int l = -1, r = -1;
+    Line(T m, T b) : m(m), b(b) {}
+    T operator()(T x) { return m*x + b; }
+  };
+  vector<Line> tree;
+  T query(int id, T l, T r, T x) {
+    auto& line = tree[id];
+    T mid = (l + r)/2, ans = line(x);
+    if(line.l != -1 && x <= mid)
+      ans = _choose(ans, query(line.l, l, mid, x));
+    else if(line.r != -1 && x > mid)
+      ans = _choose(ans, query(line.r, mid + 1, r, x));
+    return ans;
+  }
+  T query(T x) { return query(0, LO, HI, x); }
+  int add(int id, T l, T r, T m, T b) {
+    if(tree.empty() || id == -1) {
+      tree.push_back(Line(m, b));
+      return (int)tree.size() - 1;
+    }
+    auto& line = tree[id];
+    T mid = (l + r)/2;
+    if(C()(m*mid + b, line(mid))) {
+      swap(m, line.m);
+      swap(b, line.b);
+    }
+    if(C()(m, line.m) && l != r) tree[id].r = add(line.r, mid + 1, r, m, b);
+    else if(l != r) tree[id].l = add(line.l, l, mid, m, b);
+    return id;
+  }
+  void add(T m, T b) { add(0, LO, HI, m, b); }
+  T _choose(T x, T y) { return C()(x, y) ? x : y; }
+};
+```
+
+## Bitset
+
+```cpp
+struct Bitset {
+  using ull = unsigned long long;
+  static const int BLOCKSZ = CHAR_BIT * sizeof(ull);
+  int n;
+  vector<ull> a;
+  Bitset(int n) : n(n) { a.resize((n + BLOCKSZ - 1)/BLOCKSZ); }
+  void set(int p, bool v) {
+    ull b = (1ull << (p - BLOCKSZ * (p/BLOCKSZ)));
+    v ? a[p/BLOCKSZ] |= b : a[p/BLOCKSZ] &= ~b;
+  }
+  void flip(int p) {
+    ull b = (1ull << (p - BLOCKSZ * (p/BLOCKSZ)));
+    a[p/BLOCKSZ] ^= b;
+  }
+  string to_string() {
+    string res;
+    FOR(i,n) res += operator[](i) ? '1' : '0';
+    return res;
+  }
+  int count() {
+    int sz = (int)a.size(), ret = 0;
+    FOR(i,sz) ret += __builtin_popcountll(a[i]);
+    return ret;
+  }
+  int size() { return n; }
+  bool operator[](int p) { return a[p/BLOCKSZ] & (1ull << (p - BLOCKSZ * (p/BLOCKSZ))); }
+  bool operator==(const Bitset& other) {
+    if(n != other.n) return false;
+    FOR(i,(int)a.size()) if(a[i] != other.a[i]) return false;
+    return true;
+  }
+  bool operator!=(const Bitset& other) { return !operator==(other); }
+  Bitset& operator<<=(int x) {
+    int sz = (int)a.size(), sh = x/BLOCKSZ, xtra = x - sh * BLOCKSZ, rem = BLOCKSZ - xtra;
+    if(!xtra) FOR(i,sz-sh) a[i] = a[i + sh] >> xtra;
+    else {
+      FOR(i,sz-sh-1) a[i] = (a[i + sh] >> xtra) | (a[i + sh + 1] << rem);
+      if(sz - sh - 1 >= 0) a[sz - sh - 1] = a[sz - 1] >> xtra;
+    }
+    FORR(i,max(0,sz-sh),sz-1) a[i] = 0;
+    return *this;
+  }
+  Bitset& operator>>=(int x) {
+    int sz = (int)a.size(), sh = x/BLOCKSZ, xtra = x - sh * BLOCKSZ, rem = BLOCKSZ - xtra;
+    if(!xtra) for(int i = sz - 1; i >= sh; i--) a[i] = a[i - sh] << xtra;
+    else {
+      for(int i = sz - 1; i > sh; i--) a[i] = (a[i - sh] << xtra) | (a[i - sh - 1] >> rem);
+      if(sh < sz) a[sh] = a[0] << xtra;
+    }
+    for(int i = min(sz-1,sh-1); i >= 0; i--) a[i] = 0;
+    a[sz - 1] <<= (sz * BLOCKSZ - n);
+    a[sz - 1] >>= (sz * BLOCKSZ - n);
+    return *this;
+  }
+  Bitset& operator&=(const Bitset& other) { FOR(i,(int)a.size()) a[i] &= other.a[i]; return *this; }
+  Bitset& operator|=(const Bitset& other) { FOR(i,(int)a.size()) a[i] |= other.a[i]; return *this; }
+  Bitset& operator^=(const Bitset& other) { FOR(i,(int)a.size()) a[i] ^= other.a[i]; return *this; }
+  Bitset operator~() {
+    int sz = (int)a.size();
+    Bitset ret(*this);
+    FOR(i,sz) ret.a[i] = ~ret.a[i];
+    ret.a[sz - 1] <<= (sz * BLOCKSZ - n);
+    ret.a[sz - 1] >>= (sz * BLOCKSZ - n);
+    return ret;
+  }
+  Bitset operator&(const Bitset& other) { return (Bitset(*this) &= other); }
+  Bitset operator|(const Bitset& other) { return (Bitset(*this) |= other); }
+  Bitset operator^(const Bitset& other) { return (Bitset(*this) ^= other); }
+  Bitset operator<<(int x) { return (Bitset(*this) <<= x); }
+  Bitset operator>>(int x) { return (Bitset(*this) >>= x); }
+};
+```
