@@ -223,6 +223,49 @@ struct SegInfo {
 };
 ```
 
+## cdq
+```
+function<void(int, int)> solve = [&](int l, int r) {
+  if (r == l + 1) return;
+  int mid = (l + r) / 2;
+  auto middle = b[mid];
+  solve(l, mid), solve(mid, r);
+  sort(b.begin() + l, b.begin() + r, [&](auto& x, auto& y) {
+    return array{x[1], x[2], x[0]} < array{y[1], y[2], y[0]};
+  });
+  for (int i = l; i < r; i++) {
+    if (b[i] < middle) {
+      seg.modify(b[i][2], b[i][3]);
+    } else {
+      b[i][4] += seg.query(0, b[i][2] + 1);
+    }
+  }
+  for (int i = l; i < r; i++) {
+    if (b[i] < middle) seg.modify(b[i][2], -b[i][3]);
+  }
+};
+solve(0, n);
+```
+
+## Cartesian Tree
+```
+struct CartesianTree {
+  int n;
+  vector<int> lson, rson;
+  CartesianTree(vector<int>& a) : n(int(a.size())), lson(n, -1), rson(n, -1) {
+    vector<int> stk;
+    for (int i = 0; i < n; i++) {
+      while (stk.size() && a[stk.back()] > a[i]) {
+        lson[i] = stk.back(), stk.pop_back();
+      }
+      if (stk.size()) rson[stk.back()] = i;
+      stk.push_back(i);
+    }
+  }
+};
+```
+
+
 ## Union Find
 
 ```cpp
