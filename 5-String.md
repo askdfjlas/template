@@ -235,6 +235,8 @@ i = min(i, j); // from 0
 ```
 
 ## suffix array
+
+```
 vi classTable[21];
 vector<int> suffix_array(string const& s) {
     forn(i, 21) classTable[i].clear();
@@ -297,3 +299,4 @@ int lcp(int a, int b) {
     }
     return ans;
 }
+```
