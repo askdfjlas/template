@@ -236,7 +236,7 @@ i = min(i, j); // from 0
 
 ## suffix array
 
-```
+```cpp
 vi classTable[21];
 vector<int> suffix_array(string const& s) {
     forn(i, 21) classTable[i].clear();
