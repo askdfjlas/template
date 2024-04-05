@@ -68,6 +68,117 @@ constexpr int norm(int x) {
 }
 ```
 
+## Combinatorics
+
+```cpp
+const int NMAX = 3000010;
+ll factorialcompute[NMAX];
+ll invfactorialcompute[NMAX];
+ll binpow(ll a, ll pow, ll mod) {
+    if (pow <= 0)
+        return 1;
+    ll p = binpow(a, pow / 2, mod) % mod;
+    p = (p * p) % mod;
+ 
+    return (pow % 2 == 0) ? p : (a * p) % mod;
+}
+ll inverse(ll a, ll mod) {
+    if (a == 1) return 1;
+    return binpow(a, mod-2, mod);
+}
+ll combination(int a, int b, ll mod) {
+    if ( a < b) return 0;
+    ll cur = factorialcompute[a];
+    cur *= invfactorialcompute[b];
+    cur %= mod;
+    cur *= invfactorialcompute[a - b];
+    cur %= mod;
+    return cur;
+}
+void precomputeFactorial() {
+    factorialcompute[0] = 1;
+    invfactorialcompute[0] = 1;
+    for(int i = 1; i < NMAX; i++) {
+        factorialcompute[i] = factorialcompute[i-1] * i;
+        factorialcompute[i] %= MOD;
+    }
+    invfactorialcompute[NMAX-1] = inverse(factorialcompute[NMAX-1], MOD);
+    for(int i = NMAX-2; i > -1; i--) {
+        invfactorialcompute[i] = invfactorialcompute[i+1] * (i+1);
+        invfactorialcompute[i] %= MOD;
+    }
+}
+```
+## exgcd
+
+```cpp
+array<ll, 3> exgcd(ll a, ll b) {
+    if(!b) return {a, 1, 0};
+
+    auto [g, x, y] = exgcd(b, a%b);
+    return {g, y, x - a/b*y};
+}
+```
+
+## Factor/primes
+
+```cpp
+vector<int> primes(0);
+void gen_primes(int a) {
+    vector<bool> is_prime(a+1, true);
+    is_prime[0] = is_prime[1] = false;
+    for(int i = 2; i * i <= a; i++) {
+        if(is_prime[i]) {
+            for(int j = i * i; j <= a; j += i) is_prime[j] = false;
+        }
+    }
+    for(int i = 0; i <= a; i++) {
+        if(is_prime[i]) primes.push_back(i);
+    }
+}
+vector<ll> gen_factors_prime(ll a){
+    vector<ll> factors;
+    factors.push_back(1);
+    if(a == 1) return factors;
+    for(int z : primes) {
+        if(z * z > a) {
+            z = a;
+        }
+        int cnt = 0;
+        while(a % z == 0) {
+            cnt++;
+            a /= z;
+        }
+        ll num = z;
+        int size = factors.size();
+        for(int i = 1; i <= cnt; i++) {
+            for(int j = 0; j < size; j++) {
+                factors.push_back(num * factors[j]);
+            }
+            num *= z;
+        }
+        if (a == 1) break;
+    }
+    return factors;
+}
+vector<int> get_primes(int num) {
+    vector<int> curPrime;
+    if(num == 1) return curPrime;
+    for(int z : primes) {
+        if(z * z > num) {
+            curPrime.push_back(num);
+            break;
+        }
+        if(num % z == 0) {
+            curPrime.push_back(z);
+            while(num % z == 0) num /= z;
+        }
+        if(num == 1) break;
+    }
+    return curPrime;
+}
+```
+
 ## Cancer mod class
 
 + Explanation: for some prime modulo p, maintains numbers of form p^x * y, where y is a nonzero remainder mod p
