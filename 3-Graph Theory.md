@@ -638,3 +638,55 @@ for (auto [w, u, v] : edges) {
   merge(u, node), merge(v, node);
 }
 ```
+
+## centroid decomposition
+```cpp
+vector<char> res(n), seen(n), sz(n);
+function<int(int, int)> get_size = [&](int node, int fa) {
+  sz[node] = 1;
+  for (auto& ne : g[node]) {
+    if (ne == fa || seen[ne]) continue;
+    sz[node] += get_size(ne, node);
+  }
+  return sz[node];
+};
+function<int(int, int, int)> find_centroid = [&](int node, int fa, int t) {
+  for (auto& ne : g[node])
+    if (ne != fa && !seen[ne] && sz[ne] > t / 2) return find_centroid(ne, node, t);
+  return node;
+};
+function<void(int, char)> solve = [&](int node, char cur) {
+  get_size(node, -1); auto c = find_centroid(node, -1, sz[node]);
+  seen[c] = 1, res[c] = cur;
+  for (auto& ne : g[c]) {
+    if (seen[ne]) continue;
+    solve(ne, char(cur + 1)); // we can pass c here to build tree
+  }
+};
+```
+
+## virtual tree
+```
+map<int, vector<int>> gg; vector<int> stk{0};
+auto add = [&](int x, int y) { gg[x].push_back(y), gg[y].push_back(x); };
+for (int i = 0; i < k; i++) {
+  if (a[i] != 0) {
+    int p = lca(a[i], stk.back());
+    if (p != stk.back()) {
+      while (dfn[p] < dfn[stk[int(stk.size()) - 2]]) {
+        add(stk.back(), stk[int(stk.size()) - 2]);
+        stk.pop_back();
+      }
+      add(p, stk.back()), stk.pop_back();
+      if (dfn[p] > dfn[stk.back()]) stk.push_back(p);
+    }
+    stk.push_back(a[i]);
+  }
+}
+while (stk.size() > 1) {
+  if (stk.back() != 0) {
+    add(stk.back(), stk[int(stk.size()) - 2]);
+    stk.pop_back();
+  }
+}
+```
