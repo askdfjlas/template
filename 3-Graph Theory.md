@@ -258,40 +258,72 @@ struct MCMF {
 ## Heavy-Light Decomposition
 
 ```cpp
-int root = 0, cur = 0;
-vector<int> parent(n), deep(n), hson(n, -1), top(n), sz(n), dfn(n, -1);
-function<int(int, int, int)> dfs = [&](int node, int fa, int dep) {
-  deep[node] = dep, sz[node] = 1, parent[node] = fa;
-  for (auto &ne : g[node]) {
-    if (ne == fa) continue;
-    sz[node] += dfs(ne, node, dep + 1);
-    if (hson[node] == -1|| sz[ne] > sz[hson[node]]) hson[node] = ne;
+struct HeavyLight {
+  int root = 0, n = 0;
+  std::vector<int> parent, deep, hson, top, sz, dfn;
+  HeavyLight(std::vector<std::vector<int>> &g, int _root)
+      : root(_root), n(int(g.size())), parent(n), deep(n), hson(n, -1), top(n), sz(n), dfn(n, -1) {
+    int cur = 0;
+    std::function<int(int, int, int)> dfs = [&](int node, int fa, int dep) {
+      deep[node] = dep, sz[node] = 1, parent[node] = fa;
+      for (auto &ne : g[node]) {
+        if (ne == fa) continue;
+        sz[node] += dfs(ne, node, dep + 1);
+        if (hson[node] == -1 || sz[ne] > sz[hson[node]]) hson[node] = ne;
+      }
+      return sz[node];
+    };
+    std::function<void(int, int)> dfs2 = [&](int node, int t) {
+      top[node] = t, dfn[node] = cur++;
+      if (hson[node] == -1) return;
+      dfs2(hson[node], t);
+      for (auto &ne : g[node]) {
+        if (ne == parent[node] || ne == hson[node]) continue;
+        dfs2(ne, ne);
+      }
+    };
+    dfs(root, -1, 0), dfs2(root, root);
   }
-  return sz[node];
-};
-function<void(int, int)> dfs2 = [&](int node, int t) {
-  top[node] = t, dfn[node] = cur++;
-  if (hson[node] == -1) return;
-  dfs2(hson[node], t);
-  for (auto &ne : g[node]) {
-    if (ne == parent[node] || ne == hson[node]) continue;
-    dfs2(ne, ne);
+  
+  int lca(int x, int y) const {
+    while (top[x] != top[y]) {
+      if (deep[top[x]] < deep[top[y]]) swap(x, y);
+      x = parent[top[x]];
+    }
+    return deep[x] < deep[y] ? x : y;
+  }
+  
+  std::vector<std::array<int, 2>> get_dfn_path(int x, int y) const {
+    std::array<std::vector<std::array<int, 2>>, 2> path;
+    bool front = true;
+    while (top[x] != top[y]) {
+      if (deep[top[x]] > deep[top[y]]) swap(x, y), front = !front;
+      path[front].push_back({dfn[top[y]], dfn[y] + 1});
+      y = parent[top[y]];
+    }
+    if (deep[x] > deep[y]) swap(x, y), front = !front;
+  
+    path[front].push_back({dfn[x], dfn[y] + 1});
+    std::reverse(path[1].begin(), path[1].end());
+    for (const auto &[left, right] : path[1]) path[0].push_back({right, left});
+    return path[0];
+  }
+  
+  Node query_seg(int u, int v, const SegTree &seg) const {
+    auto node = Node();
+    for (const auto &[left, right] : get_dfn_path(u, v)) {
+      if (left > right) {
+        node = pull(node, rev(seg.query(right, left)));
+      } else {
+        node = pull(node, seg.query(left, right));
+      }
+    }
+    return node;
   }
 };
-// read in graph as vector<vector<int>> g(n)
-dfs(root, -1, 0), dfs2(root, root);
 ```
 
-+ USAGE: get LCA
-```cpp
-function<int(int, int)> lca = [&](int x, int y) {
-  while (top[x] != top[y]) {
-    if (deep[top[x]] < deep[top[y]]) swap(x, y);
-    x = parent[top[x]];
-  }
-  return deep[x] < deep[y] ? x : y;
-};
-```
++ USAGE: 
 
 ```cpp
 vector<ll> light(n);
