@@ -940,6 +940,39 @@ template <typename T, T LO, T HI, class C = less<T>> struct LiChaoTree {
 };
 ```
 
+## CHT
+```cpp
+struct line {
+  static bool Q; mutable ll k, m, p;
+  bool operator<(const line& o) const { return Q ? p < o.p : k < o.k; }
+};
+bool line::Q = false;
+struct lines : multiset<line> {
+  //(for doubles, use inf = 1/.0, div(a,b) = a/b)
+  ll div(ll a, ll b) { return a / b - ((a ^ b) < 0 && a % b); }
+  bool isect(iterator x, iterator y) {
+    if (y == end()) return x->p = inf, false;
+    if (x->k == y->k) {
+      x->p = x->m > y->m ? inf : -inf;
+    } else {
+      x->p = div(y->m - x->m, x->k - y->k);
+    }
+    return x->p >= y->p;
+  }
+  void add(ll k, ll m) {
+    line::Q = false;
+    auto z = insert({k, m, 0}), y = z++, x = y;
+    while (isect(y, z)) z = erase(z);
+    if (x != begin() && isect(--x, y)) isect(x, y = erase(y));
+    while ((y = x) != begin() && (--x)->p >= y->p) isect(x, erase(y));
+  }
+  ll query(ll x) {
+    line::Q = true; auto l = lower_bound({0, 0, x});
+    return l->k * x + l->m;
+  }
+};
+```
+
 ## Bitset
 
 ```cpp
