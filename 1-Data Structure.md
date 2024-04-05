@@ -922,7 +922,7 @@ struct Bitset {
       FOR(i,sz-sh-1) a[i] = (a[i + sh] >> xtra) | (a[i + sh + 1] << rem);
       if(sz - sh - 1 >= 0) a[sz - sh - 1] = a[sz - 1] >> xtra;
     }
-    FORR(i,max(0,sz-sh),sz-1) a[i] = 0;
+    for(int i = max(0, sz - sh); i <= sz - 1; i++) a[i] = 0;
     return *this;
   }
   Bitset& operator>>=(int x) {
