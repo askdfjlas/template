@@ -224,7 +224,7 @@ struct SegInfo {
 ```
 
 ## cdq
-```
+```cpp
 function<void(int, int)> solve = [&](int l, int r) {
   if (r == l + 1) return;
   int mid = (l + r) / 2;
@@ -248,10 +248,9 @@ solve(0, n);
 ```
 
 ## Cartesian Tree
-```
+```cpp
 struct CartesianTree {
-  int n;
-  vector<int> lson, rson;
+  int n; vector<int> lson, rson;
   CartesianTree(vector<int>& a) : n(int(a.size())), lson(n, -1), rson(n, -1) {
     vector<int> stk;
     for (int i = 0; i < n; i++) {
